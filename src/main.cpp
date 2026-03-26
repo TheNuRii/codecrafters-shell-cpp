@@ -11,6 +11,8 @@ int main() {
   std::string user_input;
 
   while(std::getline(std::cin, user_input)){
+      if (user_input == "exit") break;
+      
       std::cerr << user_input << ": command not found\n" << "$ ";
   }  
 }
