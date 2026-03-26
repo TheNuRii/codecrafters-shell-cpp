@@ -6,13 +6,21 @@ int main() {
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-  // TODO: Uncomment the code below to pass the first stage
   std::cout << "$ ";
   std::string user_input;
 
   while(std::getline(std::cin, user_input)){
-      if (user_input == "exit") break;
-      
-      std::cerr << user_input << ": command not found\n" << "$ ";
+    // prase user input by space and execute command
+    size_t pos = user_input.find(' ');
+    std::string command = user_input.substr(0, pos);
+    std::string command_args = user_input.substr(pos + 1);
+
+    if (command == "exit") break;
+    else if (command == "echo") {
+      std::cout << command_args << '\n';
+      std::cout << "$ ";
+      continue;
+    }
+    std::cerr << command << ": command not found\n" << "$ ";
   }  
 }
