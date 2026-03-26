@@ -8,4 +8,12 @@ int main() {
 
   // TODO: Uncomment the code below to pass the first stage
   std::cout << "$ ";
+  std::string user_input;
+
+  
+  std::getline(std::cin, user_input);
+
+  std::cerr << user_input << ": command not found" << std::endl;
+  
+  
 }
