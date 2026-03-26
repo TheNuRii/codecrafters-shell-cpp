@@ -16,7 +16,16 @@ int main() {
     std::string command_args = user_input.substr(pos + 1);
 
     if (command == "exit") break;
-    else if (command == "echo") {
+    else if (command == "type"){
+      if (command_args == "exit" || command_args == "echo" || command_args == "type") {
+        std::cout << command_args << " is a shell builtin\n" << "$ ";
+      }
+
+      else std::cerr << command_args << ": not found\n" << "$ ";
+      continue;
+    }
+
+    if (command == "echo") {
       std::cout << command_args << '\n';
       std::cout << "$ ";
       continue;
