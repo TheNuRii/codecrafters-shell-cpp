@@ -52,6 +52,7 @@ bool is_builtin(std::string& cmd) {
     {"echo", true},
     {"type", true},
     {"pwd", true},
+    {"cd", true},
   };
 
   return builtins.find(cmd) != builtins.end();
@@ -90,6 +91,19 @@ bool execute_builtin(Command cmd) {
   else if (cmd.name == "pwd") {
     std::string working_directory = std::filesystem::current_path();
     std::cout << working_directory << "\n";
+  }
+
+  else if (cmd.name == "cd") {
+    if (cmd.args.empty()) {
+      std::cout << '\n';
+    } else {
+      std::string new_path = cmd.args[0];
+      try {
+        std::filesystem::current_path(new_path);
+      } catch (const std::filesystem::filesystem_error& e) {
+      std::cout << "cd: " << new_path << ": No such file or directory\n";
+      }
+    }
   }
 
   return true;
