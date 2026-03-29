@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
 
 struct Command {
   std::string name;
@@ -50,6 +51,7 @@ bool is_builtin(std::string& cmd) {
     {"exit", true},
     {"echo", true},
     {"type", true},
+    {"pwd", true},
   };
 
   return builtins.find(cmd) != builtins.end();
@@ -83,6 +85,11 @@ bool execute_builtin(Command cmd) {
         std::cout << arg << ": not found\n"; 
       }
     }
+  }
+
+  else if (cmd.name == "pwd") {
+    std::string working_directory = std::filesystem::current_path();
+    std::cout << working_directory << "\n";
   }
 
   return true;
