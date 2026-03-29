@@ -2,54 +2,60 @@
 #include "../include/parser.hpp"
 #include <string>
 #include <sstream>
+#include <iostream>
 
 Command parse_user_input(const std::string& input) {
-    Command cmd;
-    enum State { NORMAL, IN_SINGLE, IN_DOUBLE };
-    State state = NORMAL;
+  Command cmd;
 
-    std::istringstream iss(input);
-    iss >> cmd.name;
+  enum State {NORMAL, IN_SINGLE, IN_DOUBLE};
+  State state = NORMAL;
 
-    std::string rest = input.substr(cmd.name.size()); // rest input
+  std::vector<std::string> tokens;
+  std::string current_token;
 
-  size_t start = rest.find_first_not_of(' ');   // trim leading spaces
-    if (start != std::string::npos)
-        rest = rest.substr(start);
-    else
-        return cmd;
+  for (size_t i = 0; i < input.size(); ++i) {
+    char c = input[i];
 
-    std::string current_token;
-
-    for (size_t i = 0; i < rest.size(); ++i) {
-        char c = rest[i];
-
-        
-        if (c == '\'' && state != IN_DOUBLE) {
-            state = (state == IN_SINGLE) ? NORMAL : IN_SINGLE;
-        }
-        else if (c == '\"' && state != IN_SINGLE) {
-            state = (state == IN_DOUBLE) ? NORMAL : IN_DOUBLE;
-        }
-        else if (c == ' ' && state == NORMAL) {
-            if (!current_token.empty()) {
-                cmd.args.push_back(current_token);
-                current_token.clear();
-            }
-        }
-        else if (c == '\\' && state != IN_SINGLE) {
-            // escape next char
-            if (i + 1 < rest.size()) {
-                current_token += rest[i + 1];
-                ++i;
-            }
-        } else {
-            current_token += c;
-        }
+    if (c == '\'' && state != IN_DOUBLE) {
+      state = (state == IN_SINGLE) ? NORMAL : IN_SINGLE;
     }
 
-    if (!current_token.empty())
-        cmd.args.push_back(current_token);
-      
+    else if (c == '\"' && state != IN_SINGLE) {
+      state = (state == IN_DOUBLE) ? NORMAL : IN_DOUBLE;
+    }
+
+    else if (c == ' ' && state == NORMAL) {
+      if (!current_token.empty()) {
+        tokens.push_back(current_token);
+        current_token.clear();
+      }
+    }
+
+    else if (c == '\\' && state != IN_SINGLE) {
+      if (i + 1 < input.size()) {
+        current_token += input[i + 1];
+        ++i;
+      }
+    }
+
+    else {
+      current_token += c;
+    }
+  }
+
+  if (!current_token.empty()) {
+    tokens.push_back(current_token);
+  }
+
+  if (state != NORMAL) {
+    std::cerr << "Erorr: unmatched quotes\n";
     return cmd;
+  }
+
+  if (!tokens.empty()) {
+    cmd.name = tokens[0];
+    cmd.args.assign(tokens.begin() + 1, tokens.end()); 
+  }
+
+  return cmd;
 }
