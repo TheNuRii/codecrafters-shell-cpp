@@ -13,7 +13,7 @@ Command parse_user_input(const std::string& input) {
 
     std::string rest = input.substr(cmd.name.size()); // rest input
 
-    size_t start = rest.find_first_not_of(' ');   // trim leading spaces
+  size_t start = rest.find_first_not_of(' ');   // trim leading spaces
     if (start != std::string::npos)
         rest = rest.substr(start);
     else
@@ -24,14 +24,8 @@ Command parse_user_input(const std::string& input) {
     for (size_t i = 0; i < rest.size(); ++i) {
         char c = rest[i];
 
-        if (c == '\\') {
-            // escape next char
-            if (i + 1 < rest.size()) {
-                current_token += rest[i + 1];
-                ++i;
-            }
-        }
-        else if (c == '\'' && state != IN_DOUBLE) {
+        
+        if (c == '\'' && state != IN_DOUBLE) {
             state = (state == IN_SINGLE) ? NORMAL : IN_SINGLE;
         }
         else if (c == '\"' && state != IN_SINGLE) {
@@ -43,7 +37,13 @@ Command parse_user_input(const std::string& input) {
                 current_token.clear();
             }
         }
-        else {
+        else if (c == '\\' && state != IN_SINGLE) {
+            // escape next char
+            if (i + 1 < rest.size()) {
+                current_token += rest[i + 1];
+                ++i;
+            }
+        } else {
             current_token += c;
         }
     }
